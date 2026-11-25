@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Súng thần công - Trưng bày số 3D | Bảo tàng Đà Nẵng</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #121212;
+      color: #f0f0f0;
+      line-height: 1.6;
+      padding-bottom: 48px;
+    }
+    header {
+      background: #1c1a17;
+      border-bottom: 1px solid #d4af37;
+      padding: 16px;
+      text-align: center;
+    }
+    header span {
+      font-size: 12px;
+      letter-spacing: 2px;
+      color: #d4af37;
+      text-transform: uppercase;
+    }
+    header h1 {
+      font-size: 22px;
+      margin-top: 4px;
+      color: #ffffff;
+    }
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    /* Khung chứa mô hình 3D */
+    .viewer-box {
+      position: relative;
+      width: 100%;
+      height: 380px;
+      background: #1e1e1e;
+      border: 1px solid #333;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+    .viewer-box iframe {
+      width: 100% !important;
+      height: 100% !important;
+      border: none;
+    }
+    .hint {
+      text-align: center;
+      font-size: 13px;
+      color: #aaa;
+      margin-bottom: 18px;
+    }
+
+    /* Khung phát âm thanh thuyết minh */
+    .audio-card {
+      background: #1c1a17;
+      border: 1px solid #3d3522;
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 24px;
+    }
+    .audio-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #d4af37;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .audio-card audio {
+      width: 100%;
+      height: 40px;
+      border-radius: 8px;
+      outline: none;
+    }
+
+    h2 {
+      font-size: 18px;
+      color: #d4af37;
+      border-left: 3px solid #d4af37;
+      padding-left: 10px;
+      margin: 28px 0 14px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #1a1a1a;
+      border-radius: 8px;
+      overflow: hidden;
+      font-size: 14px;
+    }
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #2c2c2c;
+      vertical-align: top;
+    }
+    th {
+      width: 32%;
+      color: #d4af37;
+      font-weight: 600;
+      background: #201e1b;
+    }
+    p, li {
+      font-size: 15px;
+      color: #dcdcdc;
+      margin-bottom: 10px;
+    }
+    ul {
+      padding-left: 20px;
+    }
+
+    /* Khung hình ảnh thực tế */
+    .media-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .photo-card {
+      background: #1a1a1a;
+      border: 1px solid #2c2c2c;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .photo-card img {
+      width: 100%;
+      height: 210px;
+      object-fit: cover;
+      display: block;
+      background: #222;
+    }
+    .photo-card figcaption {
+      padding: 10px 12px;
+      font-size: 13px;
+      color: #bdbdbd;
+      text-align: center;
+    }
+
+    /* Khung video ngắn (tỷ lệ 16:9 tự co giãn) */
+    .video-box {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #1a1a1a;
+      border: 1px solid #2c2c2c;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-top: 12px;
+    }
+    .video-box iframe,
+    .video-box video {
+      width: 100%;
+      height: 100%;
+      border: none;
+      object-fit: cover;
+      display: block;
+    }
+    .video-caption {
+      font-size: 13px;
+      color: #aaa;
+      text-align: center;
+      margin-top: 8px;
+    }
+
+    /* Phần trắc nghiệm tương tác */
+    .quiz-section {
+      background: #1a1a1a;
+      border: 1px solid #2e2a22;
+      border-radius: 12px;
+      padding: 16px;
+      margin-top: 12px;
+    }
+    .quiz-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #2c2c2c;
+      gap: 10px;
+    }
+    .quiz-header span {
+      font-size: 14px;
+      color: #bbb;
+    }
+    .score-badge {
+      background: #2b2518;
+      color: #d4af37;
+      border: 1px solid #d4af37;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 14px;
+      white-space: nowrap;
+    }
+    .question-card {
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px dashed #2e2e2e;
+    }
+    .question-card:last-of-type {
+      border-bottom: none;
+      margin-bottom: 8px;
+      padding-bottom: 0;
+    }
+    .question-text {
+      font-weight: 600;
+      color: #ffffff;
+      margin-bottom: 10px;
+      font-size: 15px;
+    }
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .option-btn {
+      width: 100%;
+      text-align: left;
+      background: #242424;
+      color: #e6e6e6;
+      border: 1px solid #383838;
+      border-radius: 8px;
+      padding: 11px 14px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .option-btn:hover:not(:disabled) {
+      background: #2e2b24;
+      border-color: #d4af37;
+    }
+    .option-btn:disabled {
+      cursor: default;
+    }
+    .option-btn.correct {
+      background: #173822;
+      border-color: #34a853;
+      color: #a8f0bc;
+      font-weight: 600;
+    }
+    .option-btn.wrong {
+      background: #3d1919;
+      border-color: #ea4335;
+      color: #f8b4b4;
+    }
+    .feedback-text {
+      font-size: 13.5px;
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 6px;
+      background: #222222;
+      line-height: 1.5;
+      display: none;
+    }
+
+    /* Hộp hiển thị mã 4 chữ số khi đạt full điểm */
+    .result-box {
+      margin-top: 18px;
+      padding: 18px 16px;
+      border-radius: 10px;
+      text-align: center;
+      display: none;
+    }
+    .result-box.success {
+      background: linear-gradient(145deg, #262013, #1a1710);
+      border: 1px solid #d4af37;
+    }
+    .result-box.retry {
+      background: #222222;
+      border: 1px solid #3a3a3a;
+    }
+    .result-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #d4af37;
+      margin-bottom: 6px;
+    }
+    .result-box.retry .result-title {
+      color: #e0e0e0;
+    }
+    .result-desc {
+      font-size: 14px;
+      color: #cccccc;
+      margin-bottom: 12px;
+    }
+    .secret-code {
+      display: inline-block;
+      background: #121212;
+      border: 2px dashed #d4af37;
+      color: #ffd54f;
+      font-family: "Courier New", Courier, monospace;
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: 8px;
+      padding: 10px 20px 10px 28px;
+      border-radius: 8px;
+      user-select: all;
+    }
+
+    .reset-btn {
+      display: block;
+      width: 100%;
+      margin-top: 16px;
+      padding: 12px;
+      background: #d4af37;
+      color: #121212;
+      border: none;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .reset-btn:hover {
+      background: #e2be46;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <span>Bảo tàng Đà Nẵng • Không gian trưng bày số 3D</span>
+    <h1>SÚNG THẦN CÔNG</h1>
+  </header>
+
+  <div class="container">
+    <!-- 1. KHUNG HIỂN THỊ 3D -->
+    <div class="viewer-box">
+      <iframe title="THẦN CÔNG (KHẨU HỎA)" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share src="https://sketchfab.com/models/0ec21f8d342d4b53ae4356d2ee10d3d7/embed"></iframe>
+    </div>
+    <p class="hint">Chạm và kéo để xoay 360° • Chụm hai ngón tay để phóng to chi tiết</p>
+
+    <!-- 2. KHUNG PHÁT ÂM THANH THUYẾT MINH -->
+    <div class="audio-card">
+      <div class="audio-title">🎧 Nghe thuyết minh hiện vật</div>
+      <audio controls preload="metadata">
+        <!-- THAY LINK_FILE_AM_THANH.mp3 BẰNG ĐƯỜNG LINK FILE MP3 CỦA BẠN -->
+        <source src="https://files.catbox.moe/uho8pk.mp3" type="audio/mpeg">
+        Trình duyệt của bạn không hỗ trợ phát âm thanh.
+      </audio>
+    </div>
+
+    <!-- 3. HỒ SƠ HIỆN VẬT -->
+    <h2>Hồ sơ hiện vật</h2>
+    <table>
+      <tr><th>Tên hiện vật</th><td>Súng thần công</td></tr>
+      <tr><th>Chất liệu</th><td>Kim loại (đồng)</td></tr>
+      <tr><th>Niên đại</th><td>Thế kỷ XIX</td></tr>
+      <tr><th>Kích thước</th><td>Dài (kể cả chuôi): 176,8 cm • Đường kính miệng vòng trong: 6 cm • Đường kính miệng vòng ngoài: 14,6 cm • Đường kính đế: 21 cm • Chuôi dài: 13,8 cm</td></tr>
+      <tr><th>Nguồn gốc</th><td>Phát hiện tại công trình thi công kè biển Liên Chiểu đoạn Xuân Thiều – Nam Ô (phường Hòa Hiệp Nam, quận Liên Chiểu, thành phố Đà Nẵng) ngày 23/5/2019</td></tr>
+    </table>
+
+    <!-- 4. ĐẶC ĐIỂM CẤU TẠO -->
+    <h2>Đặc điểm cấu tạo và hoa văn</h2>
+    <ul>
+      <li><strong>Kiểu dáng tổng thể:</strong> Súng có hình trụ tròn, đầu súng nhỏ, miệng hơi loe và to dần về phía đuôi. Chiều dài từ miệng súng đến đế súng là 163 cm, phần chuôi dài 13,8 cm; đường kính nòng 6 cm, đường kính miệng loe 14,6 cm.</li>
+      <li><strong>Trục quay và quai súng:</strong> Hai trục quay hình trụ tròn (đường kính 5,6 cm, dài 5,4 cm) đối xứng hai bên thân, mỗi mặt trục khắc 1 ký tự chữ Hán Nôm. Trên thân súng có 2 quai cầm nắm song song cách điệu hình rồng có vảy.</li>
+      <li><strong>Trang trí từ trục quay lên nòng:</strong> Cách miệng nòng 13 cm có 2 vòng hoa văn cách điệu đối xứng ngăn cách bởi 1 đường gờ nổi chạy quanh. Cách phần này 58 cm về phía trục quay là vòng hoa văn lớn rộng 7 cm khắc 4 con phượng hoàng chia thành 2 cặp đối xứng (ở mặt trước và sau), nằm trên hoa văn dây (một số hoa có dạng hoa tulip), châu đầu vào quả cầu hoa 4 cánh, kẹp giữa các đường gờ nổi.</li>
+      <li><strong>Trang trí từ trục quay về đế:</strong> Đoạn từ trục súng về đế dài 25 cm có 3 đường gờ nổi (2 đường nhỏ, 1 đường to) nằm sát nhau. Lùi về đế 10,5 cm là vòng hoa văn tròn lớn chính giữa khắc hình chim phượng hoàng vươn cổ và vươn cánh trên sông nước, bao quanh bởi 2 vòng hoa lá cách điệu.</li>
+      <li><strong>Lỗ thoát khí, lỗ khai hỏa và chuôi súng:</strong> Hai bên vòng hoa tròn lớn có 2 lỗ nhỏ thoát khí hình chữ nhật (1 cm × 0,4 cm) và 1 lỗ lớn hơn bên trái (1,6 cm × 0,4 cm), được tạo ra sau khi đưa vào sử dụng để chống nứt vỡ. Cách vòng hoa lớn 7,5 cm về phía đế là lỗ khai hỏa hình tròn bao quanh bởi gờ vuông 2,5 cm × 2,5 cm. Chuôi súng dài 13,8 cm cấu tạo hình trôn ốc, hơi phình bụng và nhỏ dần về sau.</li>
+    </ul>
+
+    <!-- 5. GIÁ TRỊ LỊCH SỬ -->
+    <h2>Giá trị lịch sử</h2>
+    <p>Theo nhà nghiên cứu Nguyễn Quang Trung Tiến (Khoa Lịch sử, Đại học Khoa học Huế), khẩu súng thần công bằng đồng này có xuất xứ từ Hà Lan, niên đại khoảng 350 năm và được triều Nguyễn sở hữu. Dù chúa Nguyễn không có quan hệ mua bán súng thần công trực tiếp với Hà Lan, một số khẩu pháo Hà Lan vẫn thuộc về triều đình thông qua việc thu giữ từ tàu <em>Kemphaan</em> mắc cạn gần quần đảo Hoàng Sa năm 1633, tàu <em>Der Gooes</em> bị đắm ở bờ biển Đàng Trong năm 1661, hoặc qua các giao dịch mua bán, hiến tặng khác.</p>
+    <p>Khẩu thần công được tìm thấy tại Đà Nẵng nhiều khả năng do quân đội triều Nguyễn di chuyển từ Thành Điện Hải trong cuộc rút lui khuya ngày 1 và rạng sáng 2/9/1858 trước khi thất thủ rồi gặp sự cố giữa đường; hoặc do binh sĩ giữ lại ven biển tiếp tục chiến đấu nhưng bị pháo hạm đối phương bắn phá và vùi lấp nên không rơi vào tay giặc. Đây là một phần di sản vô giá trong kho tàng di vật chống thực dân Pháp xâm lược tại mặt trận Đà Nẵng giữa thế kỷ XIX còn tồn tại đến ngày nay.</p>
+
+    <!-- 6. HÌNH ẢNH & VIDEO TƯ LIỆU -->
+    <h2>Hình ảnh & Video tư liệu</h2>
+    <div class="media-grid">
+      <figure class="photo-card">
+        <!-- THAY LINK_ANH_1.jpg BẰNG ĐƯỜNG LINK HÌNH ẢNH THỰC TẾ CỦA BẠN -->
+        <img src="https://baotangdanang.vn/uploads/artifacts/artifact_93pul2vr1m-1774794472986.webp" alt="Toàn cảnh hiện vật Súng thần công">
+        <figcaption>Toàn cảnh khẩu Súng thần công trưng bày tại Bảo tàng Đà Nẵng</figcaption>
+      </figure>
+      <figure class="photo-card">
+        <!-- THAY LINK_ANH_2.jpg BẰNG ĐƯỜNG LINK HÌNH ẢNH CHI TIẾT HOA VĂN -->
+        <img src="https://imgs.search.brave.com/EnwTbZvUjhrxPxLur0egMYSXjAM3HBd1O_fCFqP1sL0/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9jZG5w/aG90by5kYW50cmku/Y29tLnZuL2tVWmxn/V2E3V09oemdOU0VQ/OXlBS1lKYlhqbz0v/dGh1bWJfdy8xOTIw/LzIwMjUvMDEvMjMv/c3VuZ3RoYW5jb25n/ZHVvbmduZ3V5ZW42/LWVkaXRlZC0xNzM3/NjQ5MTU2NTg5Lmpw/ZWc_d2F0ZXJtYXJr/PXRydWU" alt="Chi tiết hoa văn phượng hoàng trên thân súng">
+        <figcaption>Cận cảnh họa tiết rồng và phượng hoàng chạm nổi trên thân súng</figcaption>
+      </figure>
+    </div>
+
+   <div class="video-box">
+      <iframe src="https://www.youtube.com/embed/EA-3ALjQWQo?si=9rYC-gaHReAtyi2E" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    </div>
+      <!-- CÁCH B: NẾU CÓ LINK FILE .MP4 TRỰC TIẾP, XÓA DÒNG <p> Ở TRÊN VÀ BỎ DẤU CHÚ THÍCH ĐOẠN DƯỚI -->
+      <!--
+      <video controls playsinline poster="LINK_ANH_BIA_VIDEO.jpg">
+        <source src="LINK_VIDEO_NGAN.mp4" type="video/mp4">
+        Trình duyệt của bạn không hỗ trợ phát video.
+      </video>
+      -->
+    </div>
+    <p class="video-caption">Video tư liệu về quá trình phát hiện và bảo tồn hiện vật</p>
+
+    <!-- 7. PHẦN TRẮC NGHIỆM KIỂM TRA KIẾN THỨC -->
+    <h2>Thử thách kiến thức hiện vật</h2>
+    <div class="quiz-section">
+      <div class="quiz-header">
+        <span>Trả lời đúng 5/5 câu ngẫu nhiên để nhận mã</span>
+        <div class="score-badge">Điểm: <span id="score">0</span>/<span id="total">5</span></div>
+      </div>
+      <div id="quiz-container"></div>
+      <div id="result-box" class="result-box"></div>
+      <button class="reset-btn" onclick="initQuiz()">Đổi bộ câu hỏi & Làm lại</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+      {
+        question: "Khẩu súng thần công được phát hiện vào thời gian nào và tại đâu?",
+        options: [
+          "Ngày 23/5/2019 tại công trình kè biển Liên Chiểu (Xuân Thiều – Nam Ô, Đà Nẵng)",
+          "Ngày 2/9/1858 tại khu vực Thành Điện Hải (Đà Nẵng)",
+          "Ngày 15/8/2018 tại bán đảo Sơn Trà (Đà Nẵng)",
+          "Ngày 10/3/2020 tại cửa sông Hàn (Đà Nẵng)"
+        ],
+        correct: 0,
+        explanation: "Hiện vật được công nhân phát hiện ngày 23/5/2019 khi thi công kè biển Liên Chiểu đoạn Xuân Thiều – Nam Ô (phường Hòa Hiệp Nam, quận Liên Chiểu, Đà Nẵng)."
+      },
+      {
+        question: "Tổng chiều dài của khẩu súng thần công (tính cả phần chuôi) là bao nhiêu?",
+        options: [
+          "163 cm",
+          "176,8 cm",
+          "190,6 cm",
+          "148,5 cm"
+        ],
+        correct: 1,
+        explanation: "Chiều dài từ miệng súng đến đế là 163 cm, cộng thêm phần chuôi dài 13,8 cm tạo thành tổng chiều dài 176,8 cm."
+      },
+      {
+        question: "Hai quai cầm nắm song song trên thân súng được tạo hình cách điệu con vật gì?",
+        options: [
+          "Chim phượng hoàng",
+          "Rồng có vảy",
+          "Kỳ lân",
+          "Rùa vàng"
+        ],
+        correct: 1,
+        explanation: "Trên thân súng có 2 quai cầm nắm song song được chế tác cách điệu hình rồng có vảy."
+      },
+      {
+        question: "Trên mặt của hai trục quay đối xứng hai bên thân súng có khắc chi tiết gì?",
+        options: [
+          "Quốc huy Hà Lan",
+          "Mỗi bên khắc 1 ký tự chữ Hán Nôm",
+          "Năm đúc súng bằng chữ số La Mã",
+          "Hình ngôi sao 8 cánh"
+        ],
+        correct: 1,
+        explanation: "Hai trục quay hình trụ tròn đối xứng hai bên thân súng đều được khắc 1 ký tự chữ Hán Nôm trên mặt trục."
+      },
+      {
+        question: "Hoa văn trung tâm của vòng hoa lớn (rộng 7 cm) nằm phía trên trục quay khắc họa hình ảnh gì?",
+        options: [
+          "4 con phượng hoàng thành 2 cặp đối xứng châu đầu vào quả cầu hoa 4 cánh",
+          "Đàn chim Lạc bay ngược chiều kim đồng hồ",
+          "Hai con rồng tranh châu trên sóng nước",
+          "Hoa sen cách điệu bao quanh chữ Thọ"
+        ],
+        correct: 0,
+        explanation: "Vòng hoa văn lớn rộng 7 cm khắc 4 con phượng hoàng chia thành 2 cặp đối xứng ở mặt trước và sau, châu đầu vào quả cầu có hình hoa 4 cánh."
+      },
+      {
+        question: "Các lỗ nhỏ hình chữ nhật ở hai bên vòng hoa văn tròn gần đế súng có tác dụng gì?",
+        options: [
+          "Dùng để luồn dây khiêng súng",
+          "Thoát khí để chống nứt vỡ khi sử dụng",
+          "Dùng để ngắm bắn mục tiêu",
+          "Gắn thêm bộ phận chân đế"
+        ],
+        correct: 1,
+        explanation: "Các lỗ thoát khí hình chữ nhật này được tạo ra sau khi đưa súng vào sử dụng nhằm thoát khí, chống nứt vỡ nòng và thân súng."
+      },
+      {
+        question: "Lỗ khai hỏa dùng để châm ngòi khi bắn có đặc điểm hình dáng như thế nào?",
+        options: [
+          "Lỗ hình tam giác cách miệng nòng 13 cm",
+          "Lỗ tròn nhỏ bao quanh bởi gờ vuông 2,5 cm × 2,5 cm",
+          "Khe rãnh dài 5,4 cm nằm giữa hai trục quay",
+          "Lỗ vuông nằm ngay trên đỉnh chuôi súng"
+        ],
+        correct: 1,
+        explanation: "Cách vòng hoa lớn 7,5 cm về phía đế là lỗ khai hỏa hình tròn nhỏ được bao quanh bởi gờ vuông kích thước 2,5 cm × 2,5 cm."
+      },
+      {
+        question: "Theo nhà nghiên cứu Nguyễn Quang Trung Tiến, khẩu súng thần công bằng đồng này có xuất xứ từ quốc gia nào?",
+        options: [
+          "Bồ Đào Nha",
+          "Hà Lan",
+          "Pháp",
+          "Tây Ban Nha"
+        ],
+        correct: 1,
+        explanation: "Theo nghiên cứu của TS. Nguyễn Quang Trung Tiến (ĐH Khoa học Huế), súng có xuất xứ từ Hà Lan, niên đại khoảng 350 năm."
+      },
+      {
+        question: "Chúa Nguyễn có thể đã sở hữu các khẩu súng Hà Lan từ sự kiện lịch sử nào sau đây?",
+        options: [
+          "Tàu Kemphaan mắc cạn gần Hoàng Sa (1633) và tàu Der Gooes đắm ở Đàng Trong (1661)",
+          "Hiệp ước nhượng quyền thương mại tại thương cảng Hội An năm 1702",
+          "Chiến thắng trên sông Bạch Đằng",
+          "Quà tặng từ sứ bộ Xiêm La thế kỷ XVIII"
+        ],
+        correct: 0,
+        explanation: "Chúa Nguyễn có được súng Hà Lan từ tàu Kemphaan mắc cạn gần Hoàng Sa năm 1633, tàu Der Gooes bị đắm ở bờ biển Đàng Trong năm 1661 hoặc qua mua bán, hiến tặng."
+      },
+      {
+        question: "Khẩu thần công được cho là gắn liền với sự kiện lịch sử nào tại Đà Nẵng vào tháng 9/1858?",
+        options: [
+          "Lễ khánh thành hệ thống kè biển Liên Chiểu",
+          "Cuộc rút lui khỏi Thành Điện Hải và chiến đấu chống liên quân Pháp – Tây Ban Nha",
+          "Cuộc diễn tập thủy quân của triều đình nhà Nguyễn",
+          "Sự kiện bàn giao vũ khí giữa các đồn lũy ven biển"
+        ],
+        correct: 1,
+        explanation: "Súng gắn với cuộc rút lui của quân đội triều Nguyễn khỏi Thành Điện Hải khuya ngày 1 và rạng sáng 2/9/1858 hoặc trận chiến đấu ven biển chống pháo hạm liên quân Pháp – Tây Ban Nha."
+      }
+    ];
+
+    const QUESTIONS_PER_ROUND = 5;
+    let currentQuestions = [];
+    let score = 0;
+    let answeredCount = 0;
+
+    function getRandomQuestions(sourceArray, count) {
+      const shuffled = [...sourceArray];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled.slice(0, count);
+    }
+
+    function showFinalResult() {
+      const resultBox = document.getElementById("result-box");
+      resultBox.style.display = "block";
+
+      if (score === currentQuestions.length) {
+        const randomCode = Math.floor(1000 + Math.random() * 9000);
+        resultBox.className = "result-box success";
+        resultBox.innerHTML = `
+          <div class="result-title">🎉 Chúc mừng! Bạn đã đạt điểm tuyệt đối (${score}/${currentQuestions.length})</div>
+          <div class="result-desc">Mã xác nhận 4 chữ số của bạn là:</div>
+          <div class="secret-code">${randomCode}</div>
+        `;
+      } else {
+        resultBox.className = "result-box retry";
+        resultBox.innerHTML = `
+          <div class="result-title">Bạn đạt ${score}/${currentQuestions.length} điểm</div>
+          <div class="result-desc" style="margin-bottom:0;">Hãy trả lời đúng toàn bộ ${currentQuestions.length} câu hỏi để nhận dãy số ngẫu nhiên 4 chữ số nhé!</div>
+        `;
+      }
+    }
+
+    function initQuiz() {
+      score = 0;
+      answeredCount = 0;
+      currentQuestions = getRandomQuestions(quizData, QUESTIONS_PER_ROUND);
+
+      document.getElementById("score").innerText = score;
+      document.getElementById("total").innerText = currentQuestions.length;
+
+      const resultBox = document.getElementById("result-box");
+      resultBox.style.display = "none";
+      resultBox.innerHTML = "";
+
+      const container = document.getElementById("quiz-container");
+      container.innerHTML = "";
+
+      currentQuestions.forEach((item, index) => {
+        const card = document.createElement("div");
+        card.className = "question-card";
+
+        const qTitle = document.createElement("div");
+        qTitle.className = "question-text";
+        qTitle.innerText = `Câu ${index + 1}: ${item.question}`;
+        card.appendChild(qTitle);
+
+        const optionsDiv = document.createElement("div");
+        optionsDiv.className = "options-list";
+
+        const feedback = document.createElement("div");
+        feedback.className = "feedback-text";
+
+        item.options.forEach((optText, oIndex) => {
+          const btn = document.createElement("button");
+          btn.className = "option-btn";
+          btn.innerText = optText;
+          btn.onclick = () => {
+            const allBtns = optionsDiv.querySelectorAll(".option-btn");
+            allBtns.forEach(b => b.disabled = true);
+            answeredCount++;
+
+            if (oIndex === item.correct) {
+              btn.classList.add("correct");
+              score++;
+              document.getElementById("score").innerText = score;
+              feedback.style.color = "#81c995";
+              feedback.style.borderLeft = "3px solid #34a853";
+              feedback.innerText = "✓ Chính xác! " + item.explanation;
+            } else {
+              btn.classList.add("wrong");
+              allBtns[item.correct].classList.add("correct");
+              feedback.style.color = "#f28b82";
+              feedback.style.borderLeft = "3px solid #ea4335";
+              feedback.innerText = "✗ Chưa chính xác! Đáp án đúng là \"" + item.options[item.correct] + "\". " + item.explanation;
+            }
+            feedback.style.display = "block";
+
+            if (answeredCount === currentQuestions.length) {
+              showFinalResult();
+            }
+          };
+          optionsDiv.appendChild(btn);
+        });
+
+        card.appendChild(optionsDiv);
+        card.appendChild(feedback);
+        container.appendChild(card);
+      });
+    }
+
+    initQuiz();
+  </script>
+
+</body>
+</html>
